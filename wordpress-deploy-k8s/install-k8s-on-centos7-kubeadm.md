@@ -6,9 +6,9 @@ This documentation guides you in setting up a cluster with one master node and o
 ## Assumptions
 |Role|FQDN|IP|OS|RAM|CPU|
 |----|----|----|----|----|----|
-|Master1|k8s-master1|192.168.2.36|CentOS 7|2G|2|
-|Worker1|k8s-worker1|192.168.2.37|CentOS 7|2G|2|
-|Worker2|k8s-worker2|192.168.2.37|CentOS 7|2G|2|
+|Master1|k8s-master1|192.168.2.42|CentOS 7|2G|2|
+|Worker1|k8s-worker1|192.168.2.43|CentOS 7|2G|2|
+|Worker2|k8s-worker2|192.168.2.44|CentOS 7|2G|2|
 
 ## Install on both k8s-master* and k8s-worker*
 Perform all the commands as root user unless otherwise specified
@@ -68,6 +68,15 @@ systemctl enable --now kubelet
 ```sh
 kubeadm init --pod-network-cidr=172.16.0.0/12
 ```
+After kubeadm init have created a serial key like this
+```sh
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.2.42:6443 --token muym0f.gwow6jwzvg36n9io \
+    --discovery-token-ca-cert-hash sha256:6ba1a2fe2ebdf54f79e930b5c516c0ab869a828f822198e040ef5531fceeb5e9
+[root@k8s-master1 ~]#
+```
+Copy this key and paste on k8s-worker*
 ##### Deploy Calico network
 ```sh
 kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
@@ -100,14 +109,23 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-## Install only k8s-worker
+## Install only k8s-worker*
 ##### Join the cluster
 Use the output from __kubeadm token create__ command in previous step from the master server and run here.
 
 ## Verifying the cluster
 ##### Get Nodes status
-```
+```sh
 kubectl get nodes
+```
+and result
+```sh
+[root@k8s-master1 ~]# kubectl get nodes
+NAME          STATUS   ROLES    AGE     VERSION
+k8s-master1   Ready    master   3m22s   v1.18.5
+k8s-worker1   Ready    <none>   2m25s   v1.18.5
+k8s-worker2   Ready    <none>   2m19s   v1.18.5
+
 ```
 ##### Get component status
 ```
