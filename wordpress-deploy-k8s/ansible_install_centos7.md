@@ -9,6 +9,23 @@
    ```sh 
    alternatives --set python /usr/bin/python3
    ```
+if you got this error
+```sh
+root@ansible-server ~]# alternatives --set python /usr/bin/python3
+cannot access /var/lib/alternatives/python: No such file or directory
+```
+let run this 
+```sh
+# Start by registering python2 as an alternative
+alternatives --install /usr/bin/python python /usr/bin/python2 50
+
+# Register python3.5 as an alternative
+alternatives --install /usr/bin/python python /usr/bin/python3 60
+
+# Select which Python version to use
+alternatives --config python
+```
+
 
 1. Check for Python version  
    ```sh 
